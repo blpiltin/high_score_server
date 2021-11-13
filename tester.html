@@ -32,7 +32,7 @@
                 console.log(res);
                 document.getElementById("old_score").innerHTML = JSON.stringify(res);
                 let oldScore = parseInt(res.score);
-                writeScore("hornball", "New Person", oldScore++, function (res) {
+                writeScore("hornball", "New Person", oldScore + 1, function (res) {
                     console.log(res);
                     document.getElementById("new_score").innerHTML = JSON.stringify(res);
                 });
