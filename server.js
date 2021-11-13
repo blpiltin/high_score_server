@@ -17,10 +17,11 @@ const fs = require("fs");
 app.use(cors());
 
 app.get("/", (req, res) => {
-    res.end("Welcome to server02x.");
+    res.end("Welcome to server02x 411.");
 });
 
-app.get("/high_scores/:game", (req, res) => {
+app.get("/high_scores", (req, res) => {
+    console.log(req.hostname + req.url);
     fs.readFile(__dirname + "/scores.json", "utf8", (err, data) => {
         data = JSON.parse(data);
         let obj = data.find(obj => obj.game === req.params.game);
@@ -33,6 +34,7 @@ app.get("/high_scores/:game", (req, res) => {
 })
 
 app.get("/high_scores/:game/update/:name/score/:score", (req, res) => {
+    console.log(req.url);
     if (isNaN(req.params.score)) {
         res.send({ error: "Invalid request." });
         return;
