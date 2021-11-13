@@ -12,22 +12,32 @@
 <body>
 
 	<body>
-        <div id="data"></div>
+        <div id="old_score"></div>
+        <div id="new_score"></div>
 
         <script type="text/javascript">
             function readScore(game, callback) {
-                fetch(encodeURI('http://localhost:3000/high_scores/' + game))
+                fetch(encodeURI("http://brianpiltin.com:4111/high_scores/" + game))
                 .then(res => res.json())
                 .then(json => callback && callback(json));
             }
 
-            readScore("hornall", function (data) {
-                document.getElementById("data").innerHTML = JSON.stringify(data);
-            });
+            function writeScore(game, name, score, callback) {
+                fetch(encodeURI("http://brianpiltin.com:4111/high_scores/" + game + "/update/" + name + "/score/" + score))
+                .then(res => res.json())
+                .then(json => callback && callback(json));
+            }
 
-            // fetch(encodeURI('http://localhost:3000/high_scores/hornball/update/Brian Piltin/score/500'))
-            // .then(res => res.json())
-            // .then(json => document.getElementById("data").innerHTML = JSON.stringify(json));
+            readScore("hornball", function (res) {
+                console.log(res);
+                document.getElementById("old_score").innerHTML = JSON.stringify(res);
+                let oldScore = parseInt(res.score);
+                writeScore("hornball", "New Person", oldScore++, function (res) {
+                    console.log(res);
+                    document.getElementById("new_score").innerHTML = JSON.stringify(res);
+                });
+            });
+            
         </script>
 	</body>
 
