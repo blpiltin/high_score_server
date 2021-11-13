@@ -4,7 +4,7 @@ const port = 3000;
 const fs = require('fs');
 
 app.get('/', (req, res) => {
-    res.end('Hello World!');
+    res.end('Welcome to server02x.');
 });
 
 app.get('/list_movies', (req, res) => {
