@@ -19,24 +19,35 @@ const app = express();
 let port;
 
 if (process.env.NODE_ENV === "production") {
-    
+
     port = 443;
 
-    const { key, cert } = (() => {
-        fs.readdir("/etc/letsencrypt/live", (dir) => {
-            dir = dir[0];
-            fs.readFile(`/etc/letsencrypt/live/${certdir}/privkey.pem`, (key) => {
-                fs.readFile(`/etc/letsencrypt/live/${certdir}/fullchain.pem`, (cert) => {
-                    return { key, cert };
-                });
+    // https://stackoverflow.com/a/7458587/2032154
+    const httpApp = express();
+    httpApp.get('*', function(req, res) {  
+        res.redirect('https://' + req.headers.host + req.url);
+    })
+    const httpServer = http.createServer(httpApp).listen(80);
+    console.log(`App listening at http://brianpiltin.com:80}`);
+
+    fs.readdir("/etc/letsencrypt/live", (dir) => {
+        dir = dir[0];
+        fs.readFile(`/etc/letsencrypt/live/${certdir}/privkey.pem`, (key) => {
+            fs.readFile(`/etc/letsencrypt/live/${certdir}/fullchain.pem`, (cert) => {
+                const httpsServer = https.createServer({key, cert}, app).listen(port);
+                console.log(`App listening at https://brianpiltin.com:${port}`);
             });
         });
-    })();
+    });
 
 } else {
 
     port = 3000;
 
+    app.listen(port, () => {
+        console.log(`App listening at http://localhost:${port}`);
+    });
+    
 }
 
 app.use(cors());
@@ -85,20 +96,3 @@ app.get("/high_scores/:game/update/:name/score/:score", (req, res) => {
         }
     });
 });
-
-if (process.env.NODE_ENV === "production") {
-    // https://stackoverflow.com/a/7458587/2032154
-    const httpApp = express();
-    httpApp.get('*', function(req, res) {  
-        res.redirect('https://' + req.headers.host + req.url);
-    })
-    const httpServer = http.createServer(httpApp).listen(80);
-    console.log(`app listening at http://brianpiltin.com:80}`);
-
-    const httpsServer = https.createServer({key, cert}, app).listen(port);
-    console.log(`app listening at https://brianpiltin.com:${port}`);
-} else {
-    app.listen(port, () => {
-        console.log(`app listening at http://localhost:${port}`);
-    });
-}
