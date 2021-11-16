@@ -57,21 +57,27 @@ app.use(cors());
 
 app.use(express.static('public'));
 
-app.get("/high_scores/:game", (req, res) => {
+//======================================================
+// Read a score
+//======================================================
+app.get("/high_scores/:hash", (req, res) => {
     console.log(req.hostname + req.url);
 
     fs.readFile(__dirname + "/scores.json", "utf8", (err, data) => {
         data = JSON.parse(data);
-        let obj = data.find(obj => obj.game === req.params.game);
+        let obj = data.find(obj => obj.hash === req.params.hash);
         if (obj) {
             res.send({ name: obj.name, score: obj.score });
         } else {
-            res.send({ error: "Game \"" + req.params.game + "\" not found." } );
+            res.send({ error: "Hash \"" + req.params.hash + "\" not found." } );
         }
     });
 });
 
-app.get("/high_scores/:game/update/:name/score/:score", (req, res) => {
+//======================================================
+// Write a score
+//======================================================
+app.get("/high_scores/:hash/update/:name/score/:score", (req, res) => {
     console.log(req.url);
     if (isNaN(req.params.score)) {
         res.send({ error: "Invalid request." });
@@ -80,10 +86,11 @@ app.get("/high_scores/:game/update/:name/score/:score", (req, res) => {
     fs.readFile(__dirname + "/scores.json", "utf8", (err, data) => {
 
         data = JSON.parse(data);
-        let obj = data.find(obj => obj.game === req.params.game);
+        let obj = data.find(obj => obj && obj.hash === req.params.hash);
 
         if (!obj) {
-            res.send({ error: "Game \"" + req.params.game + "\" not found." } );
+            obj = { hash: req.params.hash, name: "", score: 0 };
+            data.push(obj);
         }
 
         let oldScore = parseInt(obj.score);
