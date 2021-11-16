@@ -35,7 +35,7 @@ if (process.env.NODE_ENV === "production") {
     //     console.log(certdir);
         fs.readFile(`/etc/letsencrypt/live/brianpiltin.com/privkey.pem`, (err, key) => {
             console.log(key);
-            fs.readFile(`/etc/letsencrypt/live/${certdir}/fullchain.pem`, (err, cert) => {
+            fs.readFile(`/etc/letsencrypt/live/brianpiltin.com/fullchain.pem`, (err, cert) => {
                 console.log(cert);
                 const httpsServer = https.createServer({key, cert}, app).listen(port);
                 console.log(`App listening at https://brianpiltin.com:${port}`);
