@@ -30,10 +30,13 @@ if (process.env.NODE_ENV === "production") {
     const httpServer = http.createServer(httpApp).listen(80);
     console.log(`App listening at http://brianpiltin.com:80}`);
 
-    fs.readdir("/etc/letsencrypt/live", (dir) => {
-        dir = dir[0];
-        fs.readFile(`/etc/letsencrypt/live/${certdir}/privkey.pem`, (key) => {
-            fs.readFile(`/etc/letsencrypt/live/${certdir}/fullchain.pem`, (cert) => {
+    fs.readdir("/etc/letsencrypt/live", (err, files) => {
+        let certdir = files[0];
+        console.log(certdir);
+        fs.readFile(`/etc/letsencrypt/live/${certdir}/privkey.pem`, (err, key) => {
+            console.log(key);
+            fs.readFile(`/etc/letsencrypt/live/${certdir}/fullchain.pem`, (err, cert) => {
+                console.log(cert);
                 const httpsServer = https.createServer({key, cert}, app).listen(port);
                 console.log(`App listening at https://brianpiltin.com:${port}`);
             });
@@ -47,7 +50,7 @@ if (process.env.NODE_ENV === "production") {
     app.listen(port, () => {
         console.log(`App listening at http://localhost:${port}`);
     });
-    
+
 }
 
 app.use(cors());
