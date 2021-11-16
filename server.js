@@ -30,10 +30,10 @@ if (process.env.NODE_ENV === "production") {
     const httpServer = http.createServer(httpApp).listen(80);
     console.log(`App listening at http://brianpiltin.com:80}`);
 
-    fs.readdir("/etc/letsencrypt/live", (err, files) => {
-        let certdir = files[0];
-        console.log(certdir);
-        fs.readFile(`/etc/letsencrypt/live/${certdir}/privkey.pem`, (err, key) => {
+    // fs.readdir("/etc/letsencrypt/live", (err, files) => {
+    //     let certdir = files[0];
+    //     console.log(certdir);
+        fs.readFile(`/etc/letsencrypt/live/brianpiltin.com/privkey.pem`, (err, key) => {
             console.log(key);
             fs.readFile(`/etc/letsencrypt/live/${certdir}/fullchain.pem`, (err, cert) => {
                 console.log(cert);
@@ -41,7 +41,7 @@ if (process.env.NODE_ENV === "production") {
                 console.log(`App listening at https://brianpiltin.com:${port}`);
             });
         });
-    });
+    // });
 
 } else {
 
