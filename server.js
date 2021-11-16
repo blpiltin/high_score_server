@@ -7,21 +7,45 @@
 * Author: Brian Piltin
 * Copyright: Copyright (C) 2021 Brian Piltin. All Rights Reserved.
 */
+require('dotenv').config();         // Get process.env.NODE_ENV
 
-const express = require("express");
-const cors = require("cors");
-const app = express();
-const port = 4111;
 const fs = require("fs");
+const cors = require("cors");
+const http = require('http');
+const https = require('https');
+const express = require('express');
+const app = express();
+
+let port;
+
+if (process.env.NODE_ENV === "production") {
+    
+    port = 443;
+
+    const { key, cert } = (() => {
+        fs.readdir("/etc/letsencrypt/live", (dir) => {
+            dir = dir[0];
+            fs.readFile(`/etc/letsencrypt/live/${certdir}/privkey.pem`, (key) => {
+                fs.readFile(`/etc/letsencrypt/live/${certdir}/fullchain.pem`, (cert) => {
+                    return { key, cert };
+                });
+            });
+        });
+    })();
+
+} else {
+
+    port = 3000;
+
+}
 
 app.use(cors());
 
-app.get("/", (req, res) => {
-    res.end("Welcome to server02x 411.");
-});
+app.use(express.static('public'));
 
-app.get("/high_scores", (req, res) => {
+app.get("/high_scores/:game", (req, res) => {
     console.log(req.hostname + req.url);
+
     fs.readFile(__dirname + "/scores.json", "utf8", (err, data) => {
         data = JSON.parse(data);
         let obj = data.find(obj => obj.game === req.params.game);
@@ -31,7 +55,7 @@ app.get("/high_scores", (req, res) => {
             res.send({ error: "Game \"" + req.params.game + "\" not found." } );
         }
     });
-})
+});
 
 app.get("/high_scores/:game/update/:name/score/:score", (req, res) => {
     console.log(req.url);
@@ -62,6 +86,19 @@ app.get("/high_scores/:game/update/:name/score/:score", (req, res) => {
     });
 });
 
-app.listen(port, () => {
-    console.log(`app listening at http://localhost:${port}`);
-});
+if (process.env.NODE_ENV === "production") {
+    // https://stackoverflow.com/a/7458587/2032154
+    const httpApp = express();
+    httpApp.get('*', function(req, res) {  
+        res.redirect('https://' + req.headers.host + req.url);
+    })
+    const httpServer = http.createServer(httpApp).listen(80);
+    console.log(`app listening at http://brianpiltin.com:80}`);
+
+    const httpsServer = https.createServer({key, cert}, app).listen(port);
+    console.log(`app listening at https://brianpiltin.com:${port}`);
+} else {
+    app.listen(port, () => {
+        console.log(`app listening at http://localhost:${port}`);
+    });
+}
