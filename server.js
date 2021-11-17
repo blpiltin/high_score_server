@@ -78,7 +78,8 @@ app.get("/high_scores/:hash", (req, res) => {
 // Write a score
 //======================================================
 app.get("/high_scores/:hash/update/:name/score/:score", (req, res) => {
-    console.log(req.url);
+    console.log(req.hostname + req.url);
+    
     if (isNaN(req.params.score)) {
         res.send({ error: "Invalid request." });
         return;
