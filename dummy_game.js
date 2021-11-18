@@ -89,9 +89,8 @@ window.onload = function () {
     var nameChars = [];
 
     function start() {
-      showNameEntryScreen();
       // Create the welcome screen
-      // showWelcomeScreen();
+      showWelcomeScreen();
   
       // Set up the mouse click function that will handle clicks of the mouse
       mouseClickMethod(handleMouseClicks);
@@ -106,7 +105,8 @@ window.onload = function () {
       matches = 0;
       misses = 0;
       elapsedTime = 0;
-  
+      var nameChars = [];
+
       // Erase existing screen
       eraseScreen();
   
@@ -146,15 +146,13 @@ window.onload = function () {
       // This has a 3 second delay
       setTimeout(function() {
         revealAllCards();
-        showGameOverScreen();
+        if (getFinalScore() > hsScore) {
+          hsScore = getFinalScore();
+          showNameEntryScreen(Color.BLACK, Color.WHITE);
+        } else {
+          showGameOverScreen();
+        }
       }, 3000);
-
-      if (getFinalScore() > hsScore) {
-        hsScore = getFinalScore();
-        hsName = "Whoever";
-        // Show name selection screen
-        hs.write(hsName, hsScore);
-      }
     }
   
     function revealAllCards() {
@@ -214,9 +212,13 @@ window.onload = function () {
       }
     }
   
-    function eraseScreen() {
+    function eraseScreen(color) {
       var rect = new Rectangle(getWidth(), getHeight());
-      rect.setColor(Color.WHITE);
+      if (color) {
+        rect.setColor(color);
+      } else {
+        rect.setColor(Color.WHITE);
+      }
       add(rect);
     }
   
@@ -234,7 +236,7 @@ window.onload = function () {
       if (thing == insBtn) {
         // Show the insrcutions screen
         buttonSound.play();
-        showInstructionsScreen();
+        showInstructionsScreen(100, 100);
       }
       
       if (thing == backBtn) {
@@ -255,12 +257,15 @@ window.onload = function () {
         } else if (thing.getText() == "BACK") {
           hsName = hsName.slice(0, -1);
         } else if (thing.getText() == "DONE") {
-          startGame();
+          hs.write(hsName, hsScore, function (res) {
+            console.log(res);
+            showGameOverScreen();
+          });
         } else {
           hsName += thing.getText();
         }
+        hsNameTxt.setText(hsName);
       }
-      console.log(hsName);
     }
   
     function doTurn(cover) {
@@ -418,16 +423,31 @@ window.onload = function () {
       backBtn = btn;
     }
   
-    function showNameEntryScreen() {
-      eraseScreen();
+    function showNameEntryScreen(bgColor = Color.WHITE, fgColor = Color.BLACK) {
+      
+      var xSpacing = 30;
+      var ySpacing = 30;
 
+      var bg = new Rectangle(300, 200);
+      var x = getWidth() / 2 - bg.getWidth() / 2;
+      var y = getHeight() / 2 - bg.getHeight() / 2;
+      bg.setPosition(x, y);
+      bg.setColor(bgColor);
+      add(bg);
+
+      hsNameTxt = new Text("");
+      hsNameTxt.setPosition(x, y + hsNameTxt.getHeight());
+      hsNameTxt.setColor(fgColor);
+      add(hsNameTxt);
+      
       hsName = "";
       var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       var row = 0;
       var col = 0;
       for (var i = 0; i < chars.length; i++) {
         var txt = new Text(chars.charAt(i));
-        txt.setPosition(30 + col * 30, 30 + row * 30);
+        txt.setPosition(x + col * xSpacing, y + (ySpacing * 2) + row * ySpacing);
+        txt.setColor(fgColor);
         add(txt);
         nameChars.push(txt);
         col++;
@@ -437,15 +457,18 @@ window.onload = function () {
         }
       }
       var space = new Text("SPACE");
-      space.setPosition(txt.getX() + txt.getWidth() + 20, txt.getY());
+      space.setPosition(txt.getX() + txt.getWidth() + txt.getWidth(), txt.getY());
+      space.setColor(fgColor);
       add(space);
       nameChars.push(space);
       var back = new Text("BACK");
-      back.setPosition(space.getX() + space.getWidth() + 20, space.getY());
+      back.setPosition(space.getX() + space.getWidth() + txt.getWidth(), space.getY());
+      back.setColor(fgColor);
       add(back);
       nameChars.push(back);
       var done = new Text("DONE");
-      done.setPosition(back.getX() + back.getWidth() + 20, back.getY());
+      done.setPosition(back.getX() + back.getWidth() + txt.getWidth(), back.getY());
+      done.setColor(fgColor);
       add(done);
       nameChars.push(done);
     }

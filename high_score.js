@@ -9,9 +9,12 @@
 // Copyright: (C) 2021 Brian Piltin. All rights reserved.
 //======================================================
 
-const protocol = "http";
-const host = "localhost";
-const port = 3000;
+// const protocol = "http";
+const protocol = "https";
+// const host = "localhost";
+const host = "brianpiltin.com";
+// const port = 3000;
+const port = 443;
 
 const HighScore = {};
 
@@ -44,14 +47,16 @@ HighScore.init = function(authorEmail, gameName) {
             let hash = getHash();
             fetch(encodeURI(`${protocol}://${host}:${port}/high_scores/` + hash))
             .then(res => res.json())
-            .then(json => callback && callback(json));
+            .then(json => callback && callback(json))
+            .catch(error => callback && callback({ error }));
         },
 
         write: function(name, score, callback) {
             let hash = getHash();
             fetch(encodeURI(`${protocol}://${host}:${port}/high_scores/` + hash + "/update/" + name + "/score/" + score))
             .then(res => res.json())
-            .then(json => callback && callback(json));
+            .then(json => callback && callback(json))
+            .catch(error => callback && callback({ error }));
         }
     };
 }
