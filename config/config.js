@@ -35,9 +35,11 @@ for (file in files) {
   })
 
   envConfig = config[env]
-  Object.keys(envConfig).forEach(key => {
-    process.env[key] = envConfig[key]
-  })
+  if (envConfig) {
+    Object.keys(envConfig).forEach(key => {
+      process.env[key] = envConfig[key]
+    })
+  }
 }
 
 module.exports = { env }
