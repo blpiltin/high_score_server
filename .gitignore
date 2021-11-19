@@ -3,3 +3,4 @@ package-lock.json
 play.js
 .env
 private_config.json
+playground/
