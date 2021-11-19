@@ -1,0 +1,14 @@
+{
+  "all": {
+    "TEST_PRIVATE_ALL": "variable-for-private-all",
+    "PORT": 3000
+  },
+  "test": {
+    "TEST_PRIVATE_TEST": "variable-for-private-test"
+  },
+  "development": {
+    "TEST_PRIVATE_DEVELOPMENT": "variable-for-private-development"
+  }, 
+  "production": {
+  }
+}

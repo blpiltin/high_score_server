@@ -7,7 +7,8 @@
 * Author: Brian Piltin
 * Copyright: Copyright (C) 2021 Brian Piltin. All Rights Reserved.
 */
-require('dotenv').config();         // Get process.env.NODE_ENV
+const env = require("./config/config").env
+console.log("Environment:", env);
 
 const fs = require("fs");
 const cors = require("cors");
@@ -16,11 +17,10 @@ const https = require('https');
 const express = require('express');
 const app = express();
 
-let port;
+let host = process.env.HOST || "localhost";
+let port = process.env.PORT || 3000;
 
-if (process.env.NODE_ENV === "production") {
-
-    port = 443;
+if (env === "production") {
 
     // https://stackoverflow.com/a/7458587/2032154
     const httpApp = express();
@@ -28,27 +28,21 @@ if (process.env.NODE_ENV === "production") {
         res.redirect('https://' + req.headers.host + req.url);
     })
     const httpServer = http.createServer(httpApp).listen(80);
-    console.log(`App listening at http://brianpiltin.com:80}`);
+    console.log(`App listening at http://${host}:80`);
 
-    // fs.readdir("/etc/letsencrypt/live", (err, files) => {
-    //     let certdir = files[0];
-    //     console.log(certdir);
-        fs.readFile(`/etc/letsencrypt/live/brianpiltin.com/privkey.pem`, (err, key) => {
-            console.log(key);
-            fs.readFile(`/etc/letsencrypt/live/brianpiltin.com/fullchain.pem`, (err, cert) => {
-                console.log(cert);
-                const httpsServer = https.createServer({key, cert}, app).listen(port);
-                console.log(`App listening at https://brianpiltin.com:${port}`);
-            });
+    fs.readFile(`/etc/letsencrypt/live/brianpiltin.com/privkey.pem`, (err, key) => {
+        console.log(key);
+        fs.readFile(`/etc/letsencrypt/live/brianpiltin.com/fullchain.pem`, (err, cert) => {
+            console.log(cert);
+            const httpsServer = https.createServer({key, cert}, app).listen(port);
+            console.log(`App listening at https://${host}:${port}`);
         });
-    // });
+    });
 
 } else {
 
-    port = 3000;
-
     app.listen(port, () => {
-        console.log(`App listening at http://localhost:${port}`);
+        console.log(`App listening at http://${host}:${port}`);
     });
 
 }
