@@ -9,12 +9,13 @@
 // Copyright: (C) 2021 Brian Piltin. All rights reserved.
 //======================================================
 
-const protocol = "http";
-// const protocol = "https";
-const host = "localhost";
+// const protocol = "http";
+const protocol = "https";
+// const host = "localhost";
 // const host = "brianpiltin.com";
-const port = 3000;
-// const port = 443;
+const host = "highscoreserver.brianpiltin.repl.co";
+// const port = 3000;
+const port = 443;
 
 const HighScore = {};
 
