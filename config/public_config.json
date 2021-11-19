@@ -13,6 +13,10 @@
     "HOME_HOST": "localhost"
   },
   "production": {
+    "HOST": "pilt.in",
+    "PORT": 443
+  },
+  "repl": {
     "HOST": "highscoreserver.brianpiltin.repl.co",
     "PORT": 443
   }
