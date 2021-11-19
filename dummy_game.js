@@ -41,7 +41,7 @@ window.onload = function () {
     /********* BEGIN PROGRAM CODE HERE ************/
     
     // Constants
-    var GAME_DURATION = 30;
+    var GAME_DURATION = 5;
   
     var NUM_CARDS = 25;
   
@@ -146,8 +146,10 @@ window.onload = function () {
       // This has a 3 second delay
       setTimeout(function() {
         revealAllCards();
-        if (getFinalScore() > hsScore) {
-          hsScore = getFinalScore();
+        // if (getFinalScore() > hsScore) {
+        if (true) {
+          // hsScore = getFinalScore();
+          hsScore++;
           showNameEntryScreen(Color.BLACK, Color.WHITE);
         } else {
           showGameOverScreen();

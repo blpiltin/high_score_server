@@ -9,12 +9,12 @@
 // Copyright: (C) 2021 Brian Piltin. All rights reserved.
 //======================================================
 
-// const protocol = "http";
-const protocol = "https";
-// const host = "localhost";
-const host = "brianpiltin.com";
-// const port = 3000;
-const port = 443;
+const protocol = "http";
+// const protocol = "https";
+const host = "localhost";
+// const host = "brianpiltin.com";
+const port = 3000;
+// const port = 443;
 
 const HighScore = {};
 
@@ -41,20 +41,34 @@ HighScore.init = function(authorEmail, gameName) {
         return hash;
     }
 
+    const request = ( url, params = "", method = 'GET' ) => {
+        let options = {
+            method
+        };
+        if ( 'GET' === method ) {
+            url += params && '?' + ( new URLSearchParams( params ) ).toString();
+        } else {
+            options.headers = { 'Content-Type': 'application/json;charset=utf-8' };
+            options.body = JSON.stringify( params );
+        }
+        
+        return fetch(encodeURI(url), options ).then( res => res.json() );
+    };
+    
+    const get = ( url, params ) => request( url, params, 'GET' );
+
+    const post = ( url, params ) => request( url, params, 'POST' );
+
     return {
 
         read: function(callback) {
-            let hash = getHash();
-            fetch(encodeURI(`${protocol}://${host}:${port}/high_scores/` + hash))
-            .then(res => res.json())
+            get(`${protocol}://${host}:${port}/high_scores/${getHash()}`)
             .then(json => callback && callback(json))
             .catch(error => callback && callback({ error }));
         },
 
         write: function(name, score, callback) {
-            let hash = getHash();
-            fetch(encodeURI(`${protocol}://${host}:${port}/high_scores/` + hash + "/update/" + name + "/score/" + score))
-            .then(res => res.json())
+            post(`${protocol}://${host}:${port}/high_scores/${getHash()}`, { name: name, score: score })
             .then(json => callback && callback(json))
             .catch(error => callback && callback({ error }));
         }

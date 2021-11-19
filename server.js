@@ -55,13 +55,16 @@ if (process.env.NODE_ENV === "production") {
 
 app.use(cors());
 
+app.use(express.json());
+
 app.use(express.static('public'));
+
 
 //======================================================
 // Read a score
 //======================================================
 app.get("/high_scores/:hash", (req, res) => {
-    console.log(req.hostname + req.url);
+    console.log("GET: " + req.hostname + req.url);
 
     fs.readFile(__dirname + "/scores.json", "utf8", (err, data) => {
         data = JSON.parse(data);
@@ -77,10 +80,11 @@ app.get("/high_scores/:hash", (req, res) => {
 //======================================================
 // Write a score
 //======================================================
-app.get("/high_scores/:hash/update/:name/score/:score", (req, res) => {
-    console.log(req.hostname + req.url);
-    
-    if (isNaN(req.params.score)) {
+app.post("/high_scores/:hash", (req, res) => {
+    console.log("POST: " + req.hostname + req.url);
+    console.log(req.body);
+
+    if (!req.body || isNaN(req.body.score)) {
         res.send({ error: "Invalid request." });
         return;
     }
@@ -95,10 +99,10 @@ app.get("/high_scores/:hash/update/:name/score/:score", (req, res) => {
         }
 
         let oldScore = parseInt(obj.score);
-        let newScore = parseInt(req.params.score);
+        let newScore = parseInt(req.body.score);
 
         if (newScore > oldScore) {
-            obj.name = req.params.name;
+            obj.name = req.body.name;
             obj.score = newScore;
             fs.writeFile(__dirname + "/scores.json",
                 JSON.stringify(data), () => res.send({ success: "Score updated." }));
